@@ -16,6 +16,7 @@ from bot.keyboards import (
     search_results_keyboard,
     categories_keyboard
 )
+from bot.utils import KNOWN_MENU_BUTTONS
 from bot.utils.localization import get_text
 from bot.config import config
 
@@ -46,12 +47,29 @@ async def start_search_callback(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
+@router.message(SearchState.waiting_for_query, F.text.in_(["❌ Bekor qilish", "❌ Отмена", "⬅ Asosiy menyuga qaytish", "⬅ Главное меню"]))
+async def cancel_search(message: Message, state: FSMContext):
+    """Qidiruv rejimini bekor qilish."""
+    await state.clear()
+    user_id = message.from_user.id
+    lang = await get_user_language(user_id)
+    is_admin = user_id in (config.admin_ids or [])
+    text = get_text("back_to_main_text", lang=lang)
+    await message.answer(text, reply_markup=main_menu_keyboard(is_admin=is_admin, lang=lang), parse_mode="HTML")
+
+
 @router.message(SearchState.waiting_for_query)
 async def process_search_query(message: Message, state: FSMContext):
     """Foydalanuvchi yozgan qidiruv matnini qayta ishlash."""
-    query = message.text.strip()
+    query = (message.text or "").strip()
     user_id = message.from_user.id
     lang = await get_user_language(user_id)
+    is_admin = user_id in (config.admin_ids or [])
+
+    # Agar menyu tugmasi bosilgan bo'lsa, qidiruv holatini tozalaymiz
+    if query in KNOWN_MENU_BUTTONS or query.startswith("/"):
+        await state.clear()
+        return
 
     if len(query) < 2:
         await message.answer(

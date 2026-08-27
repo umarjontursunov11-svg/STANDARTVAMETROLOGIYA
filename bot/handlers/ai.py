@@ -18,29 +18,10 @@ from bot.keyboards import (
     ai_suggestions_keyboard
 )
 from bot.utils.localization import get_text
+from bot.utils import KNOWN_MENU_BUTTONS
 from bot.config import config
 
 router = Router()
-
-KNOWN_MENU_BUTTONS = [
-    # Uzbek buttons
-    "🔍 Mahsulot qidirish", "📦 Mahsulotlar katalogi", "🛒 Savatcha",
-    "🤖 AI Metrolog Maslahatchi", "🔬 Metrologik xizmatlar",
-    "🏢 Kompaniya haqida", "📝 Ariza / Maslahat olish",
-    "📞 Bog'lanish va Manzil", "🌐 Tilni o'zgartirish", "⚙ Admin Paneli",
-    "📊 Statistika", "📋 Oxirgi arizalar", "➕ Mahsulot qo'shish", "📢 Xabar yuborish",
-    "⬅ Asosiy menyuga qaytish", "❌ Bekor qilish", "🧹 Muloqotni tozalash",
-    "📱 Telefon raqamni yuborish",
-
-    # Russian buttons
-    "🔍 Поиск продукции", "📦 Каталог продукции", "🛒 Корзина",
-    "🤖 AI Консультант Метролог", "🔬 Метрологические услуги",
-    "🏢 О компании", "📝 Заявка / Консультация",
-    "📞 Контакты и Адрес", "🌐 Сменить язык", "⚙ Панель администратора",
-    "📊 Статистика", "📋 Последние заявки", "➕ Добавить продукцию", "📢 Рассылка",
-    "⬅ Главное меню", "❌ Отмена", "🧹 Очистить историю",
-    "📱 Отправить номер телефона"
-]
 
 
 @router.message(Command("ai"))

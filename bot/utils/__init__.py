@@ -9,7 +9,8 @@ from .helpers import (
     format_company_info,
     format_services_info,
     format_order_admin_notification,
-    format_order_user_receipt
+    format_order_user_receipt,
+    KNOWN_MENU_BUTTONS
 )
 
 __all__ = [
@@ -20,5 +21,6 @@ __all__ = [
     "format_company_info",
     "format_services_info",
     "format_order_admin_notification",
-    "format_order_user_receipt"
+    "format_order_user_receipt",
+    "KNOWN_MENU_BUTTONS"
 ]

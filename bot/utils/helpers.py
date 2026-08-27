@@ -9,6 +9,26 @@ from typing import Dict, Any, List
 from bot.config import config
 from bot.utils.localization import CATEGORY_TRANSLATIONS, get_text
 
+KNOWN_MENU_BUTTONS = [
+    # Uzbek buttons
+    "🔍 Mahsulot qidirish", "📦 Mahsulotlar katalogi", "🛒 Savatcha",
+    "🤖 AI Metrolog Maslahatchi", "🔬 Metrologik xizmatlar",
+    "🏢 Kompaniya haqida", "📝 Ariza / Maslahat olish",
+    "📞 Bog'lanish va Manzil", "🌐 Tilni o'zgartirish", "⚙ Admin Paneli",
+    "📊 Statistika", "📋 Oxirgi arizalar", "➕ Mahsulot qo'shish", "📢 Xabar yuborish",
+    "⬅ Asosiy menyuga qaytish", "❌ Bekor qilish", "🧹 Muloqotni tozalash",
+    "📱 Telefon raqamni yuborish",
+
+    # Russian buttons
+    "🔍 Поиск продукции", "📦 Каталог продукции", "🛒 Корзина",
+    "🤖 AI Консультант Метролог", "🔬 Метрологические услуги",
+    "🏢 О компании", "📝 Заявка / Консультация",
+    "📞 Контакты и Адрес", "🌐 Сменить язык", "⚙ Панель администратора",
+    "📊 Статистика", "📋 Последние заявки", "➕ Добавить продукцию", "📢 Рассылка",
+    "⬅ Главное меню", "❌ Отмена", "🧹 Очистить историю",
+    "📱 Отправить номер телефона"
+]
+
 
 def format_product_card(product: Dict[str, Any], lang: str = "uz") -> str:
     """Mahsulot yoki xizmat haqidagi to'liq kartochka matni (O'zbek / Rus)."""
