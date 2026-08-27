@@ -204,6 +204,8 @@ def format_company_info(lang: str = "uz") -> str:
     """Kompaniya haqida to'liq ma'lumot (O'zbek / Rus)."""
     comp = config.company
     if lang == "ru":
+        addr_ru = "г. Ташкент, Сергелийский р-н, ул. Узумзор, 16-тупик, дом 18"
+        work_ru = "Понедельник - Пятница: 09:00 - 18:00"
         text = (
             f"🏢 <b>{comp.name}</b>\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
@@ -218,13 +220,13 @@ def format_company_info(lang: str = "uz") -> str:
             f"• Официальные свидетельства о поверке и сертификаты калибровки\n"
             f"• Профессиональные консультации экспертов и оперативная доставка\n\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
-            f"📍 <b>Адрес:</b> {comp.address}\n"
+            f"📍 <b>Адрес:</b> {addr_ru}\n"
             f"📞 <b>Телефоны:</b> {comp.phone}\n"
             f"✉️ <b>Email:</b> {comp.email}\n"
         )
         if comp.website and comp.website.strip():
             text += f"🌐 <b>Веб-сайт:</b> {comp.website}\n"
-        text += f"🕒 <b>Режим работы:</b> {comp.work_hours}\n"
+        text += f"🕒 <b>Режим работы:</b> {work_ru}\n"
         return text
 
     text = (
