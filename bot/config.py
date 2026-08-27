@@ -26,8 +26,8 @@ class CompanyConfig:
         "Dushanba - Juma: 09:00 - 18:00 (Shanba: 09:00 - 14:00)"
     )
     telegram_support: str = os.getenv("COMPANY_TELEGRAM_SUPPORT", "@metrologiya_support")
-    latitude: float = float(os.getenv("COMPANY_LATITUDE", "41.2858"))
-    longitude: float = float(os.getenv("COMPANY_LONGITUDE", "69.2036"))
+    latitude: float = float(os.getenv("COMPANY_LATITUDE", "41.234351"))
+    longitude: float = float(os.getenv("COMPANY_LONGITUDE", "69.217780"))
 
 
 @dataclass
