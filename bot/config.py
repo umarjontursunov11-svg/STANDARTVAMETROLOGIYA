@@ -14,18 +14,18 @@ load_dotenv()
 @dataclass
 class CompanyConfig:
     name: str = os.getenv("COMPANY_NAME", '"STANDART VA METROLOGIYA" MCHJ')
-    phone: str = os.getenv("COMPANY_PHONE", "+998 71 200 00 00")
-    email: str = os.getenv("COMPANY_EMAIL", "info@metrologiya.uz")
-    website: str = os.getenv("COMPANY_WEBSITE", "https://metrologiya.uz")
+    phone: str = os.getenv("COMPANY_PHONE", "+998 90 939-71-83, +998 98 361-71-83, +998 55 503-47-15")
+    email: str = os.getenv("COMPANY_EMAIL", "standartvametrologiya@gmail.com")
+    website: str = os.getenv("COMPANY_WEBSITE", "")
     address: str = os.getenv(
         "COMPANY_ADDRESS",
-        "Toshkent shahri, Chilonzor tumani, Farhod ko'chasi, 1-uy"
+        "Toshkent sh., Sergeli t., Uzumzor ko'chasi, 16-tupik, 18-xonadon"
     )
     work_hours: str = os.getenv(
         "COMPANY_WORK_HOURS",
-        "Dushanba - Juma: 09:00 - 18:00 (Shanba: 09:00 - 14:00)"
+        "Dushanba - Juma: 09:00 - 18:00"
     )
-    telegram_support: str = os.getenv("COMPANY_TELEGRAM_SUPPORT", "@metrologiya_support")
+    telegram_support: str = os.getenv("COMPANY_TELEGRAM_SUPPORT", "@standartgso_admin1")
     latitude: float = float(os.getenv("COMPANY_LATITUDE", "41.234351"))
     longitude: float = float(os.getenv("COMPANY_LONGITUDE", "69.217780"))
 
