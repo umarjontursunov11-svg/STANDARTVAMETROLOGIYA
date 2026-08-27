@@ -15,14 +15,20 @@ from bot.database import (
     get_categories,
     add_product,
     get_db,
-    get_user_language
+    get_user_language,
+    get_category_by_id,
+    get_category_product_count,
+    get_products_by_category
 )
+from bot.utils.localization import get_text
+
 from bot.states import AdminState
 from bot.keyboards import (
     admin_menu_keyboard,
     main_menu_keyboard,
     cancel_keyboard,
-    categories_keyboard
+    categories_keyboard,
+    products_list_keyboard
 )
 
 router = Router()
@@ -201,22 +207,64 @@ async def admin_product_desc_input(message: Message, state: FSMContext):
         name=data["name"],
         code=data["code"],
         standard=data["code"],
-        accuracy_class="Standart",
+        accuracy_class="Standard",
         measurement_range="По паспорту / Texnik pasport bo'yicha",
         price=data["price"],
         description=desc,
-        is_service=0
+        is_service=0,
     )
 
-    await state.clear()
-    success = (
-        f"✅ <b>'{data['name']}'</b> успешно сохранена в каталоге!" if lang == "ru"
-        else f"✅ <b>'{data['name']}'</b> muvaffaqiyatli saqlandi va katalogga qo'shildi!"
+    # ---------- Show updated product list for the category ----------
+    # Fetch category details
+    category = await get_category_by_id(data["category_id"])
+    if not category:
+        await message.answer(
+            get_text("catalog_title", lang=lang),
+            reply_markup=admin_menu_keyboard(lang=lang),
+            parse_mode="HTML",
+        )
+        await state.clear()
+        return
+
+    # Get first page of products (same PAGE_SIZE as catalog)
+    PAGE_SIZE = 5
+    products = await get_products_by_category(
+        category_id=data["category_id"], limit=PAGE_SIZE, offset=0
     )
+    total_count = await get_category_product_count(data["category_id"])
+
+    # Build catalog text using localisation key
+    text = get_text(
+        "category_info",
+        lang=lang,
+        icon=category.get("icon", "📁"),
+        name=category["name"],
+        desc=category.get("description", ""),
+        total_count=total_count,
+    )
+
+    markup = products_list_keyboard(
+        products=products,
+        category_id=data["category_id"],
+        page=1,
+        total_count=total_count,
+        page_size=PAGE_SIZE,
+        lang=lang,
+    )
+
+    await message.answer(
+        text,
+        reply_markup=markup,
+        parse_mode="HTML",
+    )
+
+    # Show success message and admin menu
+    await state.clear()
+    success = get_text("product_added_success", lang=lang).format(name=data["name"])
     await message.answer(
         success,
         reply_markup=admin_menu_keyboard(lang=lang),
-        parse_mode="HTML"
+        parse_mode="HTML",
     )
 
 

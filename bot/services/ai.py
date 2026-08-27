@@ -51,17 +51,25 @@ class AIService:
         # 1. Gemini
         gemini_key = config.ai.gemini_api_key or config.ai.api_key
         if gemini_key:
+            model_name = config.ai.model or "gemini-3.7-flash"
+            # Try new google.genai SDK first
             try:
-                import google.generativeai as genai
-                genai.configure(api_key=gemini_key)
-                model_name = config.ai.model or "gemini-1.5-flash"
-                self._gemini_client = genai.GenerativeModel(
-                    model_name=model_name,
-                    system_instruction=METROLOGY_SYSTEM_PROMPT
-                )
-                logger.info(f"Google Gemini AI muvaffaqiyatli ulandi (model: {model_name})")
-            except Exception as e:
-                logger.warning(f"Gemini AI ulanishida xatolik: {e}")
+                from google import genai
+                self._gemini_client = genai.Client(api_key=gemini_key)
+                self._gemini_model_name = model_name
+                logger.info(f"Google GenAI mijozi muvaffaqiyatli ulandi (model: {model_name})")
+            except Exception as e1:
+                try:
+                    import google.generativeai as genai_legacy
+                    genai_legacy.configure(api_key=gemini_key)
+                    self._gemini_client = genai_legacy.GenerativeModel(
+                        model_name=model_name,
+                        system_instruction=METROLOGY_SYSTEM_PROMPT
+                    )
+                    self._gemini_model_name = model_name
+                    logger.info(f"Google Gemini (legacy) muvaffaqiyatli ulandi (model: {model_name})")
+                except Exception as e2:
+                    logger.warning(f"Gemini AI ulanishida xatolik: {e1} / {e2}")
 
         # 2. OpenAI
         openai_key = config.ai.openai_api_key
@@ -148,30 +156,60 @@ class AIService:
 
     async def _ask_gemini(self, message: str, context: str, history: List[Dict[str, str]]) -> Optional[str]:
         """Google Gemini API orqali javob olish."""
-        try:
-            full_prompt = message
-            if context:
-                full_prompt = f"{message}\n\n{context}"
-
-            # Gemini chat orqali so'rov yuborish
-            loop = asyncio.get_running_loop()
-            
-            def _call():
-                chat = self._gemini_client.start_chat(history=[])
-                # Oldingi kontekstlarni qo'shish
-                for h in history[:-1]:
-                    if h["role"] == "user":
-                        chat.history.append({"role": "user", "parts": [h["content"]]})
-                    elif h["role"] == "assistant":
-                        chat.history.append({"role": "model", "parts": [h["content"]]})
-                res = chat.send_message(full_prompt)
-                return res.text
-
-            result = await loop.run_in_executor(None, _call)
-            return self._clean_markdown_to_html(result)
-        except Exception as e:
-            logger.error(f"Gemini chaqiruvida xatolik: {e}")
+        gemini_key = config.ai.gemini_api_key or config.ai.api_key
+        if not gemini_key:
             return None
+
+        # Format prompt with context
+        full_user_msg = message
+        if context:
+            full_user_msg = f"{message}\n\n{context}"
+
+        # Build contents from history
+        contents = []
+        for h in history[:-1]:
+            role = "user" if h["role"] == "user" else "model"
+            contents.append({"role": role, "parts": [{"text": h["content"]}]})
+        contents.append({"role": "user", "parts": [{"text": full_user_msg}]})
+
+        payload = {
+            "system_instruction": {"parts": [{"text": METROLOGY_SYSTEM_PROMPT}]},
+            "contents": contents,
+            "generationConfig": {
+                "temperature": 0.7,
+                "maxOutputTokens": 1000
+            }
+        }
+
+        # Try models in order
+        candidate_models = [
+            config.ai.model or "gemini-3.6-flash",
+            "gemini-3.6-flash",
+            "gemini-3.7-flash",
+            "gemini-flash-latest"
+        ]
+        # Remove duplicates while preserving order
+        candidate_models = list(dict.fromkeys([m for m in candidate_models if m]))
+
+        import aiohttp
+        for model_name in candidate_models:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={gemini_key}"
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.post(url, json=payload, timeout=aiohttp.ClientTimeout(total=25)) as resp:
+                        if resp.status == 200:
+                            data = await resp.json()
+                            candidates = data.get("candidates", [])
+                            if candidates:
+                                text = candidates[0]["content"]["parts"][0]["text"]
+                                return self._clean_markdown_to_html(text)
+                        else:
+                            err_body = await resp.text()
+                            logger.warning(f"Gemini ({model_name}) status {resp.status}: {err_body[:200]}")
+            except Exception as e:
+                logger.warning(f"Gemini ({model_name}) so'rovida xatolik: {e}")
+
+        return None
 
     async def _ask_openai(self, message: str, context: str, history: List[Dict[str, str]]) -> Optional[str]:
         """OpenAI API orqali javob olish."""

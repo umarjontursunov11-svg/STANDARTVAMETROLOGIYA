@@ -104,36 +104,36 @@ async def init_db():
 
         await db.commit()
 
-        # Dastlabki ma'lumotlarni tekshirish va kiritish
-        cursor = await db.execute("SELECT COUNT(*) FROM categories")
-        count = (await cursor.fetchone())[0]
+        # Upsert seed data (categories and products)
+        # Insert categories if they do not exist
+        for cat in SEED_CATEGORIES:
+            await db.execute(
+                "INSERT OR IGNORE INTO categories (id, name, icon, description) VALUES (?, ?, ?, ?)",
+                (cat["id"], cat["name"], cat["icon"], cat["description"]))
 
-        if count == 0:
-            logger.info("Boshlang'ich kategoriyalar va mahsulotlar yuklanmoqda...")
-            
-            for cat in SEED_CATEGORIES:
+        # Insert products if they do not exist
+        for prod in SEED_PRODUCTS:
+            # Check existence by category_id and name
+            cursor = await db.execute(
+                "SELECT id FROM products WHERE category_id = ? AND name = ?",
+                (prod["category_id"], prod["name"]))
+            exists = await cursor.fetchone()
+            if not exists:
                 await db.execute(
-                    "INSERT INTO categories (id, name, icon, description) VALUES (?, ?, ?, ?)",
-                    (cat["id"], cat["name"], cat["icon"], cat["description"])
-                )
-
-            for prod in SEED_PRODUCTS:
-                await db.execute("""
-                    INSERT INTO products (
+                    """INSERT INTO products (
                         category_id, name, code, standard, accuracy_class,
                         measurement_range, price, description, is_service
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    prod["category_id"],
-                    prod["name"],
-                    prod["code"],
-                    prod["standard"],
-                    prod["accuracy_class"],
-                    prod["measurement_range"],
-                    prod["price"],
-                    prod["description"],
-                    prod["is_service"]
-                ))
-
-            await db.commit()
-            logger.info("Boshlang'ich ma'lumotlar muvaffaqiyatli saqlandi.")
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        prod["category_id"],
+                        prod["name"],
+                        prod["code"],
+                        prod["standard"],
+                        prod["accuracy_class"],
+                        prod["measurement_range"],
+                        prod["price"],
+                        prod["description"],
+                        prod["is_service"]
+                    ))
+        await db.commit()
+        logger.info("Seed data upsert completed.")

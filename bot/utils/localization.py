@@ -200,6 +200,10 @@ TEXTS = {
         "uz": "🗑 Mahsulot o'chirildi",
         "ru": "🗑 Товар удален из корзины"
     },
+    "product_added_success": {
+        "uz": "✅ <b>'{name}'</b> muvaffaqiyatli saqlandi va katalogga qo'shildi!",
+        "ru": "✅ <b>'{name}'</b> успешно сохранена в каталоге!"
+    },
 
     # ----------------------------------------------------
     # AI METROLOG MATNLARI
