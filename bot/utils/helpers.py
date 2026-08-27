@@ -324,7 +324,7 @@ def format_order_user_receipt(
             f"📦 <b>Тема / Позиция:</b> {item_safe}\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
             f"Наши специалисты свяжутся с вами в кратчайшие сроки.\n"
-            f"Благодарим за обращение в наш Центр стандартизации и метрологии!"
+            f"Благодарим за обращение в компанию \"STANDART VA METROLOGIYA\" MCHJ!"
         )
     return (
         f"✅ <b>Arizangiz muvaffaqiyatli qabul qilindi!</b>\n"
@@ -335,5 +335,5 @@ def format_order_user_receipt(
         f"📦 <b>Mavzu:</b> {item_safe}\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
         f"Mutaxassislarimiz qisqa vaqt ichida siz bilan bog'lanishadi.\n"
-        f"Standart va Metrologiya markazimizga ishonch bildirganingiz uchun rahmat!"
+        f"\"STANDART VA METROLOGIYA\" MCHJ ga ishonch bildirganingiz uchun rahmat!"
     )
