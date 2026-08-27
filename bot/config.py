@@ -13,7 +13,7 @@ load_dotenv()
 
 @dataclass
 class CompanyConfig:
-    name: str = os.getenv("COMPANY_NAME", "O'zbekiston Standartlashtirish va Metrologiya Markazi")
+    name: str = os.getenv("COMPANY_NAME", '"STANDART VA METROLOGIYA" MCHJ')
     phone: str = os.getenv("COMPANY_PHONE", "+998 71 200 00 00")
     email: str = os.getenv("COMPANY_EMAIL", "info@metrologiya.uz")
     website: str = os.getenv("COMPANY_WEBSITE", "https://metrologiya.uz")
