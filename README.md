@@ -83,6 +83,7 @@ python -m venv venv
 pip install -r requirements.txt
 
 # 3. .env fayliga bot tokenini kiritish
+# 📍 Bot lokatsiyasi: 41.234351, 69.217780
 # BOT_TOKEN=...
 
 # 4. Botni ishga tushirish
