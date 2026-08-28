@@ -27,3 +27,4 @@ Quyidagi menyudan kerakli bo'limni tanlang:
 - **Manzil:** `Toshkent sh., Sergeli t., Uzumzor ko'chasi, 16-tupik, 18-xonadon`
 - **Ish tartibi:** `Dushanba - Juma: 09:00 - 18:00`
 - **Telegram Support:** `@standartgso_admin1`
+- **Lokatsiya koordinatalari:** `41.234351, 69.217780`

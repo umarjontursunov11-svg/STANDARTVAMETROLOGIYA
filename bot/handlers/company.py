@@ -88,3 +88,31 @@ async def contact_info_handler(message: Message, state: FSMContext):
         reply_markup=company_links_keyboard(lang=lang),
         parse_mode="HTML"
     )
+
+    # Lokatsiya yuborish
+    try:
+        await message.answer_location(
+            latitude=comp.latitude,
+            longitude=comp.longitude
+        )
+    except Exception:
+        pass
+
+
+@router.callback_query(F.data == "send_company_geo")
+async def send_company_geo_callback(callback: CallbackQuery):
+    """Inline tugma orqali lokatsiya yuborish."""
+    user_id = callback.from_user.id
+    lang = await get_user_language(user_id)
+    comp = config.company
+    await callback.answer("Lokatsiya yuborilmoqda..." if lang == "uz" else "Отправка локации...")
+    try:
+        await callback.message.answer_location(
+            latitude=comp.latitude,
+            longitude=comp.longitude
+        )
+    except Exception:
+        addr = "Toshkent sh., Sergeli t., Uzumzor ko'chasi, 16-tupik, 18-xonadon" if lang == "uz" else "г. Ташкент, Сергелийский р-н, ул. Узумзор, 16-тупик, дом 18"
+        await callback.message.answer(
+            f"📍 Manzil / Адрес: {addr}"
+        )

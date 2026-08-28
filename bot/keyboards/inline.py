@@ -304,6 +304,7 @@ def company_links_keyboard(lang: str = "uz") -> InlineKeyboardMarkup:
     keyboard = []
 
     web_txt = "🌐 Официальный сайт" if lang == "ru" else "🌐 Rasmiy veb-sayt"
+    map_txt = "📍 Локация на карте" if lang == "ru" else "📍 Xaritada joylashuv (Lokatsiya)"
     tg_txt = "💬 Связаться в Telegram" if lang == "ru" else "💬 Telegram orqali bog'lanish"
 
     if config.company.website and (config.company.website.startswith("http://") or config.company.website.startswith("https://")):
@@ -313,6 +314,13 @@ def company_links_keyboard(lang: str = "uz") -> InlineKeyboardMarkup:
                 url=config.company.website
             )
         ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            text=map_txt,
+            callback_data="send_company_geo"
+        )
+    ])
 
     if config.company.telegram_support and (config.company.telegram_support.startswith("@") or config.company.telegram_support.startswith("http")):
         support_url = (
