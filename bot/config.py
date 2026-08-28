@@ -13,7 +13,7 @@ load_dotenv()
 
 @dataclass
 class CompanyConfig:
-    name: str = os.getenv("COMPANY_NAME", '"STANDART VA METROLOGIYA" MCHJ')
+    name: str = os.getenv("COMPANY_NAME", 'OOO "STANDART VA METROLOGIYA"')
     phone: str = os.getenv("COMPANY_PHONE", "+998 90 939-71-83, +998 98 361-71-83, +998 55 503-47-15")
     email: str = os.getenv("COMPANY_EMAIL", "standartvametrologiya@gmail.com")
     website: str = os.getenv("COMPANY_WEBSITE", "")
