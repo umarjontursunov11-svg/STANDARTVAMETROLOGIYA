@@ -89,11 +89,11 @@ async def contact_info_handler(message: Message, state: FSMContext):
         parse_mode="HTML"
     )
 
-    # Lokatsiya yuborish
+    # Lokatsiya yuborish (Aynan: 41.234351, 69.217780)
     try:
         await message.answer_location(
-            latitude=comp.latitude,
-            longitude=comp.longitude
+            latitude=41.234351,
+            longitude=69.217780
         )
     except Exception:
         pass
@@ -104,12 +104,11 @@ async def send_company_geo_callback(callback: CallbackQuery):
     """Inline tugma orqali lokatsiya yuborish."""
     user_id = callback.from_user.id
     lang = await get_user_language(user_id)
-    comp = config.company
     await callback.answer("Lokatsiya yuborilmoqda..." if lang == "uz" else "Отправка локации...")
     try:
         await callback.message.answer_location(
-            latitude=comp.latitude,
-            longitude=comp.longitude
+            latitude=41.234351,
+            longitude=69.217780
         )
     except Exception:
         addr = "Toshkent sh., Sergeli t., Uzumzor ko'chasi, 16-tupik, 18-xonadon" if lang == "uz" else "г. Ташкент, Сергелийский р-н, ул. Узумзор, 16-тупик, дом 18"
