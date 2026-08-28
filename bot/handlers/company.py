@@ -51,27 +51,36 @@ async def contact_info_handler(message: Message, state: FSMContext):
     lang = await get_user_language(user_id)
     comp = config.company
 
+    name = comp.name if comp.name and "STANDART VA METROLOGIYA" in comp.name else 'OOO "STANDART VA METROLOGIYA"'
+    phones = comp.phone if comp.phone and "939-71-83" in comp.phone else '+998 90 939-71-83, +998 98 361-71-83, +998 55 503-47-15'
+    email = comp.email if comp.email and "standartvametrologiya" in comp.email else 'standartvametrologiya@gmail.com'
+    tg_support = comp.telegram_support if comp.telegram_support and "standartgso" in comp.telegram_support else '@standartgso_admin1'
+
     if lang == "ru":
+        addr_ru = "г. Ташкент, Сергелийский р-н, ул. Узумзор, 16-тупик, дом 18"
+        work_ru = "Понедельник - Пятница: 09:00 - 18:00"
         contact_text = (
             f"📞 <b>Контакты и Адрес:</b>\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
-            f"🏢 <b>Организация:</b> {comp.name}\n"
-            f"📍 <b>Адрес:</b> {comp.address}\n"
-            f"📞 <b>Телефоны:</b> {comp.phone}\n"
-            f"✉️ <b>Email:</b> {comp.email}\n"
-            f"🕒 <b>Режим работы:</b> {comp.work_hours}\n"
-            f"💬 <b>Telegram оператор:</b> {comp.telegram_support}\n"
+            f"🏢 <b>Организация:</b> {name}\n"
+            f"📍 <b>Адрес:</b> {addr_ru}\n"
+            f"📞 <b>Телефоны:</b> {phones}\n"
+            f"✉️ <b>Email:</b> {email}\n"
+            f"🕒 <b>Режим работы:</b> {work_ru}\n"
+            f"💬 <b>Telegram оператор:</b> {tg_support}\n"
         )
     else:
+        addr_uz = "Toshkent sh., Sergeli t., Uzumzor ko'chasi, 16-tupik, 18-xonadon"
+        work_uz = "Dushanba - Juma: 09:00 - 18:00"
         contact_text = (
             f"📞 <b>Bog'lanish va Manzil:</b>\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
-            f"🏢 <b>Tashkilot:</b> {comp.name}\n"
-            f"📍 <b>Manzil:</b> {comp.address}\n"
-            f"📞 <b>Ishonch telefoni:</b> {comp.phone}\n"
-            f"✉️ <b>Elektron pochta:</b> {comp.email}\n"
-            f"🕒 <b>Ish vaqti:</b> {comp.work_hours}\n"
-            f"💬 <b>Telegram operator:</b> {comp.telegram_support}\n"
+            f"🏢 <b>Tashkilot:</b> {name}\n"
+            f"📍 <b>Manzil:</b> {addr_uz}\n"
+            f"📞 <b>Ishonch telefoni:</b> {phones}\n"
+            f"✉️ <b>Elektron pochta:</b> {email}\n"
+            f"🕒 <b>Ish vaqti:</b> {work_uz}\n"
+            f"💬 <b>Telegram operator:</b> {tg_support}\n"
         )
 
     await message.answer(contact_text, parse_mode="HTML")

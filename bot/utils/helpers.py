@@ -203,11 +203,15 @@ def format_cart_order_admin_notification(order_data: Dict[str, Any]) -> str:
 def format_company_info(lang: str = "uz") -> str:
     """Kompaniya haqida to'liq ma'lumot (O'zbek / Rus)."""
     comp = config.company
+    name = comp.name if comp.name and "STANDART VA METROLOGIYA" in comp.name else 'OOO "STANDART VA METROLOGIYA"'
+    phones = comp.phone if comp.phone and "939-71-83" in comp.phone else '+998 90 939-71-83, +998 98 361-71-83, +998 55 503-47-15'
+    email = comp.email if comp.email and "standartvametrologiya" in comp.email else 'standartvametrologiya@gmail.com'
+
     if lang == "ru":
         addr_ru = "г. Ташкент, Сергелийский р-н, ул. Узумзор, 16-тупик, дом 18"
         work_ru = "Понедельник - Пятница: 09:00 - 18:00"
         text = (
-            f"🏢 <b>{comp.name}</b>\n"
+            f"🏢 <b>{name}</b>\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
             f"Наша компания специализируется на поставке высококачественных <b>Государственных Стандартных Образцов (ГСО)</b>, "
             f"<b>буферных растворов</b>, <b>стандарт-титров (фиксаналов)</b>, <b>химических реактивов</b> "
@@ -221,16 +225,18 @@ def format_company_info(lang: str = "uz") -> str:
             f"• Профессиональные консультации экспертов и оперативная доставка\n\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
             f"📍 <b>Адрес:</b> {addr_ru}\n"
-            f"📞 <b>Телефоны:</b> {comp.phone}\n"
-            f"✉️ <b>Email:</b> {comp.email}\n"
+            f"📞 <b>Телефоны:</b> {phones}\n"
+            f"✉️ <b>Email:</b> {email}\n"
         )
         if comp.website and comp.website.strip():
             text += f"🌐 <b>Веб-сайт:</b> {comp.website}\n"
         text += f"🕒 <b>Режим работы:</b> {work_ru}\n"
         return text
 
+    addr_uz = "Toshkent sh., Sergeli t., Uzumzor ko'chasi, 16-tupik, 18-xonadon"
+    work_uz = "Dushanba - Juma: 09:00 - 18:00"
     text = (
-        f"🏢 <b>{comp.name}</b>\n"
+        f"🏢 <b>{name}</b>\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
         f"Bizning korxona O'zbekiston Respublikasi bo'ylab laboratoriyalar, ishlab chiqarish "
         f"korxonalari va tahlil markazlari uchun yuqori sifatli <b>Davlat Standart Namunalar (GSO)</b>, "
@@ -244,13 +250,13 @@ def format_company_info(lang: str = "uz") -> str:
         f"• Rasmiy davlat qiyoslovi (poverka) va kalibrlash guvohnomalari\n"
         f"• Malakali mutaxassislar maslahati va tezkor yetkazib berish\n\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"📍 <b>Manzil:</b> {comp.address}\n"
-        f"📞 <b>Telefonlar:</b> {comp.phone}\n"
-        f"✉️ <b>Email:</b> {comp.email}\n"
+        f"📍 <b>Manzil:</b> {addr_uz}\n"
+        f"📞 <b>Telefonlar:</b> {phones}\n"
+        f"✉️ <b>Email:</b> {email}\n"
     )
     if comp.website and comp.website.strip():
         text += f"🌐 <b>Veb-sayt:</b> {comp.website}\n"
-    text += f"🕒 <b>Ish vaqti:</b> {comp.work_hours}\n"
+    text += f"🕒 <b>Ish vaqti:</b> {work_uz}\n"
     return text
 
 
