@@ -22,18 +22,25 @@ async def cmd_start(message: Message, state: FSMContext):
     
     user_id = message.from_user.id
     username = message.from_user.username
-    full_name = message.from_user.full_name or "Foydalanuvchi"
-
+    raw_name = (message.from_user.full_name or "").strip()
+    
     # Foydalanuvchini bazaga qo'shish
-    await add_user(user_id, username, full_name)
+    await add_user(user_id, username, raw_name or "Foydalanuvchi")
     lang = await get_user_language(user_id)
     is_admin = user_id in (config.admin_ids or [])
+
+    if not raw_name or raw_name in (".", "..", "...", "-", "_", "None"):
+        full_name = "Hurmatli mijoz" if lang == "uz" else "Уважаемый клиент"
+    else:
+        full_name = raw_name
+
+    company_name = config.company.name if config.company.name and "STANDART VA METROLOGIYA" in config.company.name else 'OOO "STANDART VA METROLOGIYA"'
 
     welcome_text = get_text(
         "welcome",
         lang=lang,
         full_name=full_name,
-        company_name=config.company.name
+        company_name=company_name
     )
 
     await message.answer(
