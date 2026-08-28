@@ -83,36 +83,8 @@ async def contact_info_handler(message: Message, state: FSMContext):
             f"💬 <b>Telegram operator:</b> {tg_support}\n"
         )
 
-    # Lokatsiya yuborish (Sergeli tumani, Uzumzor ko'chasi, 16-tupik, 18-xonadon)
-    lat = comp.latitude if (comp.latitude and abs(comp.latitude - 41.235972) < 0.05) else 41.235972
-    lon = comp.longitude if (comp.longitude and abs(comp.longitude - 69.218966) < 0.05) else 69.218966
-
-    try:
-        await message.answer_location(
-            latitude=lat,
-            longitude=lon
-        )
-    except Exception:
-        pass
-
-
-@router.callback_query(F.data == "send_company_geo")
-async def send_company_geo_callback(callback: CallbackQuery):
-    """Inline tugma orqali lokatsiya yuborish."""
-    user_id = callback.from_user.id
-    lang = await get_user_language(user_id)
-    comp = config.company
-    lat = comp.latitude if (comp.latitude and abs(comp.latitude - 41.235972) < 0.05) else 41.235972
-    lon = comp.longitude if (comp.longitude and abs(comp.longitude - 69.218966) < 0.05) else 69.218966
-
-    await callback.answer("Lokatsiya yuborilmoqda..." if lang == "uz" else "Отправка локации...")
-    try:
-        await callback.message.answer_location(
-            latitude=lat,
-            longitude=lon
-        )
-    except Exception:
-        addr = "Toshkent sh., Sergeli t., Uzumzor ko'chasi, 16-tupik, 18-xonadon" if lang == "uz" else "г. Ташкент, Сергелийский р-н, ул. Узумзор, 16-тупик, дом 18"
-        await callback.message.answer(
-            f"📍 Manzil / Адрес: {addr}"
-        )
+    await message.answer(
+        contact_text,
+        reply_markup=company_links_keyboard(lang=lang),
+        parse_mode="HTML"
+    )
