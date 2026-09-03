@@ -3,6 +3,7 @@ Admin boshqaruv paneli handleri (Faqat adminlar uchun).
 O'zbek va Rus tillarini qo'llab-quvvatlaydi.
 """
 
+import asyncio
 from aiogram import Router, F, Bot
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
@@ -270,26 +271,42 @@ async def admin_product_desc_input(message: Message, state: FSMContext):
 
 @router.message(F.text.in_(["📢 Xabar yuborish", "📢 Рассылка"]))
 async def admin_broadcast_start(message: Message, state: FSMContext):
-    """Barcha foydalanuvchilarga xabar yuborishni boshlash."""
+    """Barcha foydalanuvchilarga xabar/yangilik yuborishni boshlash."""
     if not is_admin_user(message.from_user.id):
         return
 
     user_id = message.from_user.id
     lang = await get_user_language(user_id)
     await state.set_state(AdminState.waiting_for_broadcast)
-    prompt = "📢 Введите текст сообщения для всех пользователей:" if lang == "ru" else "📢 Barcha foydalanuvchilarga yubormoqchi bo'lgan xabaringiz matnini kiriting:"
+    prompt = (
+        "📢 <b>Рассылка новостей и сообщений</b>\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "Отправьте текст, фото, видео или перешлите готовый пост с канала. Сообщение будет разослано всем пользователям бота в исходном виде:"
+        if lang == "ru" else
+        "📢 <b>Yangilik va Xabar Tarqatish</b>\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "Barcha foydalanuvchilarga yubormoqchi bo'lgan xabaringizni yozing (matn, rasm, video yoki kanaldan forward post). Xabar to'liq o'z holatida yetkaziladi:"
+    )
     await message.answer(
         prompt,
-        reply_markup=cancel_keyboard(lang=lang)
+        reply_markup=cancel_keyboard(lang=lang),
+        parse_mode="HTML"
     )
 
 
 @router.message(AdminState.waiting_for_broadcast)
 async def admin_broadcast_process(message: Message, state: FSMContext, bot: Bot):
-    """Xabarni barcha ro'yxatdan o'tgan foydalanuvchilarga tarqatish."""
-    broadcast_text = message.text
+    """Xabarni barcha ro'yxatdan o'tgan foydalanuvchilarga to'liq nusxalab tarqatish."""
     user_id = message.from_user.id
     lang = await get_user_language(user_id)
+
+    # Agar admin bekor qilish tugmasini bossa
+    if message.text in ["❌ Bekor qilish", "❌ Отмена", "⬅ Asosiy menyuga qaytish", "⬅ Главное меню"]:
+        await state.clear()
+        cancel_msg = "Xabar yuborish bekor qilindi." if lang == "uz" else "Рассылка отменена."
+        await message.answer(cancel_msg, reply_markup=admin_menu_keyboard(lang=lang))
+        return
+
     await state.clear()
 
     db = await get_db()
@@ -299,28 +316,43 @@ async def admin_broadcast_process(message: Message, state: FSMContext, bot: Bot)
     finally:
         await db.close()
 
+    total_users = len(users)
+    if total_users == 0:
+        empty_text = "Foydalanuvchilar topilmadi." if lang == "uz" else "Пользователи не найдены."
+        await message.answer(empty_text, reply_markup=admin_menu_keyboard(lang=lang))
+        return
+
+    await message.answer(
+        f"⏳ Xabar {total_users} ta foydalanuvchiga yuborilmoqda..." if lang == "uz"
+        else f"⏳ Отправка сообщения {total_users} пользователям..."
+    )
+
     sent_count = 0
     fail_count = 0
-
-    await message.answer(f"⏳ Отправка {len(users)} пользователям..." if lang == "ru" else f"⏳ Xabar {len(users)} ta foydalanuvchiga yuborilmoqda...")
 
     for row in users:
         u_id = row[0]
         try:
-            await bot.send_message(
-                chat_id=u_id,
-                text=f"📢 <b>Информация / Yangilik:</b>\n\n{broadcast_text}",
-                parse_mode="HTML"
-            )
+            # send_copy yordamida matn, rasm, video, formatlash 100% o'z holatida yetkaziladi
+            await message.send_copy(chat_id=u_id)
             sent_count += 1
+            await asyncio.sleep(0.04)  # Telegram FloodWait chegarasini chetlab o'tish uchun
         except Exception:
             fail_count += 1
 
     done = (
-        f"✅ Рассылка завершена!\n\n• Доставлено: {sent_count}\n• Не доставлено: {fail_count}" if lang == "ru"
-        else f"✅ Xabar yuborish yakunlandi!\n\n• Muvaffaqiyatli: {sent_count} ta\n• Yuborilmadi: {fail_count} ta"
+        f"✅ <b>Xabar yuborish yakunlandi!</b>\n\n"
+        f"👥 Jami foydalanuvchilar: {total_users} ta\n"
+        f"✅ Muvaffaqiyatli yetkazildi: <b>{sent_count}</b> ta\n"
+        f"❌ Yetkazilmadi (botni bloklaganlar): <b>{fail_count}</b> ta"
+        if lang == "uz" else
+        f"✅ <b>Рассылка завершена!</b>\n\n"
+        f"👥 Всего пользователей: {total_users}\n"
+        f"✅ Успешно доставлено: <b>{sent_count}</b>\n"
+        f"❌ Не доставлено (заблокировали): <b>{fail_count}</b>"
     )
     await message.answer(
         done,
-        reply_markup=admin_menu_keyboard(lang=lang)
+        reply_markup=admin_menu_keyboard(lang=lang),
+        parse_mode="HTML"
     )
