@@ -1,10 +1,10 @@
 # 📍 OOO "STANDART VA METROLOGIYA" — Rasmiy Lokatsiya va Koordinatalar
 
 ## 📌 Aniq Koordinatalar:
-- **Kenglik (Latitude):** `41.234351`
-- **Uzunlik (Longitude):** `69.217780`
-- **Google Maps Havolasi:** [Google Maps](https://maps.google.com/?q=41.234351,69.217780)
-- **Yandex Maps Havolasi:** [Yandex Maps](https://yandex.ru/maps/?pt=69.217780,41.234351&z=17&l=map)
+- **Kenglik (Latitude):** `41.267184`
+- **Uzunlik (Longitude):** `69.229170`
+- **Google Maps Havolasi:** [Google Maps](https://maps.google.com/?q=41.267184,69.229170)
+- **Yandex Maps Havolasi:** [Yandex Maps](https://yandex.ru/maps/?pt=69.229170,41.267184&z=17&l=map)
 
 ---
 
@@ -19,4 +19,4 @@
 ---
 
 ## 🤖 Bot Funksionalligi:
-Foydalanuvchi botda **"📞 Bog'lanish va Manzil"** bo'limini tanlaganda yoki **"📍 Xaritada joylashuv (Lokatsiya)"** tugmasini bosganda, Telegram xaritasi orqali aynan `41.234351, 69.217780` koordinatasi yuboriladi.
+Foydalanuvchi botda **"📞 Bog'lanish va Manzil"** bo'limini tanlaganda yoki **"📍 Xaritada joylashuv (Lokatsiya)"** tugmasini bosganda, Telegram xaritasi orqali aynan `41.267184, 69.229170` koordinatasi yuboriladi.
